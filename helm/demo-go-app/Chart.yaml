@@ -1,0 +1,16 @@
+description: Helm Chart for Demo Application
+engine: gotpl
+icon: http://www.airxcell.com/main_style/demo.png
+keywords:
+- helm
+- kubernetes
+- demo-go-app
+- demo
+- infracloudio
+maintainers:
+- email: harshal@infracloud.io
+  name: Harshal Shah
+name: demo-go-app
+sources:
+- https://github.com/infracloudio/demo-go-app
+version: 0.0.6

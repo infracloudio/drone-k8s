@@ -1,0 +1,104 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: "drone-server"
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: "drone-server"
+      labels:
+        app: "drone"
+        role: "server"
+    spec:
+      containers:
+      - name: "server"
+        image: "drone/drone:0.5"
+        env:
+          - name: DRONE_OPEN
+            value: "true"
+          - name: DRONE_GITHUB
+            value: "true"
+          - name: DRONE_GITHUB_CLIENT
+            value: "7ec232eea49fea39886f"
+          - name: DRONE_GITHUB_SECRET
+            value: "6b34c1c349f9eaacd8ed0701e13c5ee2a0494881"
+          - name: DRONE_SECRET
+            value: "Drone_11"
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "100m"
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8000
+        volumeMounts:
+          - mountPath: /var/lib/drone/
+            name: "drone-server-storage"
+      volumes:
+      - name: "drone-server-storage"
+        persistentVolumeClaim:
+          claimName: drone-pvc
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: "drone-agent"
+spec:
+  replicas: 2
+  template:
+    metadata:
+      name: "drone-agent"
+      labels:
+        app: "drone"
+        role: "agent"
+    spec:
+      containers:
+      - name: "agent"
+        image: "harshals/drone-agent:1.0"
+        env:
+          - name: DRONE_SERVER
+            value: "ws://drone-agent-svc:8000/ws/broker"
+          - name: DRONE_SECRET
+            value: "Drone_11"
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "100m"
+        imagePullPolicy: Always
+        volumeMounts:
+        - mountPath: /var/run/docker.sock
+          name: "docker-sock"
+      volumes:
+      - name: "docker-sock"
+        hostPath:
+          path: /var/run/docker.sock
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: "drone-server-svc"
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+    protocol: TCP
+  selector:
+    app: "drone"
+    role: "server"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: "drone-agent-svc"
+spec:
+  ports:
+  - name:
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+  selector:
+    app: "drone"
+    role: "server"

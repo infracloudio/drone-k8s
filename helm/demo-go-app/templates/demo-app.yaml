@@ -1,0 +1,74 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: demo-app-prod
+spec:
+  replicas: {{ .Values.Prod.Replicas }}
+  template:
+    metadata:
+      name: demo-app
+      labels:
+        app: demo-app
+        role: frontend
+        env: prod
+    spec:
+      containers:
+      - name: frontend
+        image: {{ .Values.Prod.ImageName }}:{{ .Values.Prod.ImageTag }}
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "100m"
+        imagePullPolicy: Always
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8000
+        ports:
+        - name: frontend
+          containerPort: 8000
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: demo-app-canary
+spec:
+  replicas: {{ .Values.Canary.Replicas }}
+  template:
+    metadata:
+      name: demo-app
+      labels:
+        app: demo-app
+        role: frontend
+        env: canary
+    spec:
+      containers:
+      - name: frontend
+        image: {{ .Values.Canary.ImageName }}:{{ .Values.Canary.ImageTag }}
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "100m"
+        imagePullPolicy: Always
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8000
+        ports:
+        - name: frontend
+          containerPort: 8000
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: demo-app-lb-prod
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+    protocol: TCP
+  selector:
+    app: demo-app
+    role: frontend

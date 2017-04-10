@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    volume.beta.kubernetes.io/storage-class: standard-gpd
+    volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/gce-pd
+  labels:
+    app: drone
+  name: drone-pvc
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
