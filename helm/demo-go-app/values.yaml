@@ -6,7 +6,7 @@
 Prod:
   Replicas: 4
   ImageName: harshals/demo-go-app
-  ImageTag: master.4
+  ImageTag: master.2
 Canary:
   Replicas: 4
   ImageName: harshals/demo-go-app

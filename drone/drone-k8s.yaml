@@ -20,9 +20,9 @@ spec:
           - name: DRONE_GITHUB
             value: "true"
           - name: DRONE_GITHUB_CLIENT
-            value: "7ec232eea49fea39886f"
+            value: "CHANGEME_YOUR_GITHUB_CLIENT"
           - name: DRONE_GITHUB_SECRET
-            value: "6b34c1c349f9eaacd8ed0701e13c5ee2a0494881"
+            value: "CHANGEME_YOUR_GITHUB_SECRET"
           - name: DRONE_SECRET
             value: "Drone_11"
         resources:
